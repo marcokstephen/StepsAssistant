@@ -20,6 +20,7 @@ public class StartListenerService extends Service implements SensorEventListener
     public static final String TIME_WALKED = "com.sm.stepsassistant.TIME_WALKED";
     public static final String DATA_TO_EXPORT = "com.sm.stepsassistant.DATA_TO_EXPORT";
     public static final String DAILY_GOAL = "com.sm.stepsassistant.DAILY_GOAL";
+    public static final String SHOW_STEP_CARD = "com.sm.stepsassistant.SHOW_STEP_CARD";
     private long currentStep = 0;
 
     @Override
