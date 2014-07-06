@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MyWearActivity"
+    android:background="@color/background_color"
+    tools:deviceIds="wear_round">
+
+    <com.sm.stepsassistant.PercentView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/temp"
+        android:id="@+id/stepTextView"
+        android:textColor="@color/play_blue_dark"
+        android:textSize="35sp"
+        android:fontFamily="sans-serif-light"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/temp"
+        android:id="@+id/timeTextView"
+        android:fontFamily="sans-serif-light"
+        android:textColor="@color/play_blue_light"
+        android:layout_below="@+id/stepTextView"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
