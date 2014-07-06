@@ -41,6 +41,8 @@ public class MyWearActivity extends Activity {
         setupViews(steps, time);
 
         setInitialAlarm();
+        setInitialNotification();
+
         if (!isMyServiceRunning(StartListenerService.class)) {
             Intent listenerIntent = new Intent(this, StartListenerService.class);
             startService(listenerIntent);
@@ -99,6 +101,13 @@ public class MyWearActivity extends Activity {
         AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC, c.getTimeInMillis(), 86400000, pi); //86400000 is ms per day
         Log.d("OUTPUT","Alarm set for midnight");
+    }
+
+    public void setInitialNotification(){
+        Intent notifyIntent = new Intent(this, NotificationReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(this,0,notifyIntent,0);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC,System.currentTimeMillis(),420000,pi); //420000 = 7 minutes refresh
     }
 
     public void setPercentage(int steps){
