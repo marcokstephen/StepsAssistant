@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
@@ -29,6 +32,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -125,6 +132,47 @@ public class MyActivity extends Activity {
             }
         }
         return jsonArray.toString();
+    }
+
+    public void exportData(View view){
+        String columnString = "Day,Month,Year,Steps,SecondsWalked";
+        for (int i = 0; i < dayList.size(); i++){
+            Day day = dayList.get(i);
+            String datastring ="\n"+day.getDay()+","+day.getMonth()+","+day.getYear()+","+day.getStepCount()+","+day.getTime();
+            columnString = columnString + datastring;
+        }
+        File file = null;
+        File root = Environment.getExternalStorageDirectory();
+        if (root.canWrite()){
+            File dir = new File(root.getAbsolutePath()+"/StepAssistantData");
+            dir.mkdirs();
+            String filename = "StepAssistantData.csv";
+            file = new File(dir, filename);
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(file);
+            } catch (FileNotFoundException e){
+                e.printStackTrace();
+            }
+            try {
+                out.write(columnString.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                out.close();
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+        Uri u1 = null;
+        u1 = Uri.fromFile(file);
+
+        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Step History");
+        sendIntent.putExtra(Intent.EXTRA_STREAM, u1);
+        sendIntent.setType("text/html");
+        startActivity(sendIntent);
     }
 
     public void onStartSyncDataClick(View view){
