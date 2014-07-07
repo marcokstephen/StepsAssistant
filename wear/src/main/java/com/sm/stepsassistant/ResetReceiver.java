@@ -25,7 +25,7 @@ public class ResetReceiver extends BroadcastReceiver {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         int counterSinceRestart = prefs.getInt(StartListenerService.COUNTER_SINCE_RESTART, 0);
-        int dailyCounter = prefs.getInt(StartListenerService.DAILY_COUNTER, 0);
+        int counter = StartListenerService.calculateSteps(context);
         int msWalked = prefs.getInt(StartListenerService.TIME_WALKED, 0);
 
         editor.putInt(StartListenerService.DAILY_COUNTER,(0-counterSinceRestart));
@@ -45,7 +45,7 @@ public class ResetReceiver extends BroadcastReceiver {
             jsonObject.put("day",c.get(Calendar.DATE));
             jsonObject.put("month",c.get(Calendar.MONTH));
             jsonObject.put("year",c.get(Calendar.YEAR));
-            jsonObject.put("steps",dailyCounter);
+            jsonObject.put("steps",counter);
             jsonObject.put("msTime",msWalked);
             jsonArray.put(jsonObject);
             valuesToExport = jsonArray.toString();
@@ -55,5 +55,8 @@ public class ResetReceiver extends BroadcastReceiver {
 
         editor.putString(StartListenerService.DATA_TO_EXPORT,valuesToExport);
         editor.commit();
+
+        Intent resetNotification = new Intent(context, NotificationReceiver.class);
+        context.startActivity(resetNotification);
     }
 }

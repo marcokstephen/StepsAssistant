@@ -96,7 +96,5 @@ public class DataLayerListenerService extends WearableListenerService {
 
             return results;
         }
-
-
     }
 }

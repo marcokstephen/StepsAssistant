@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
 
 import java.text.NumberFormat;
 
@@ -38,5 +39,6 @@ public class NotificationReceiver extends BroadcastReceiver {
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.notify(notificationId,notificationBuilder.build());
+        Log.d("OUTPUT","Notification Updated!");
     }
 }

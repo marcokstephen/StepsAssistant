@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.format.Time;
 import android.util.Log;
 import android.widget.ImageView;
 import android.app.ActivityManager;
@@ -40,7 +41,6 @@ public class MyWearActivity extends Activity {
         setContentView(R.layout.activity_my_wear);
         setupViews(steps, time);
 
-        setInitialAlarm();
         setInitialNotification();
 
         if (!isMyServiceRunning(StartListenerService.class)) {
@@ -90,24 +90,14 @@ public class MyWearActivity extends Activity {
         }
     }
 
-    public void setInitialAlarm(){
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR,0);
-        c.add(Calendar.DATE,1);
-        c.set(Calendar.MINUTE,0);
-        c.set(Calendar.SECOND,0);
-        Intent resetIntent = new Intent(this, ResetReceiver.class);
-        PendingIntent pi = PendingIntent.getBroadcast(this, 0, resetIntent,0);
-        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC, c.getTimeInMillis(), 86400000, pi); //86400000 is ms per day
-        Log.d("OUTPUT","Alarm set for midnight");
-    }
-
     public void setInitialNotification(){
+        Time time = new Time();
+        time.setToNow();
         Intent notifyIntent = new Intent(this, NotificationReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(this,0,notifyIntent,0);
         AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC,System.currentTimeMillis(),420000,pi); //420000 = 7 minutes refresh
+        alarmManager.setRepeating(AlarmManager.RTC,time.toMillis(false)+10000,420000,pi); //420000 = 7 minutes refresh
+        Log.d("OUTPUT","Initial notification set!");
     }
 
     public void setPercentage(int steps){

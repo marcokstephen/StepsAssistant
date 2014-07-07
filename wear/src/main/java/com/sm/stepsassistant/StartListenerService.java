@@ -1,6 +1,8 @@
 package com.sm.stepsassistant;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +12,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.text.format.Time;
 import android.util.Log;
 import android.content.Context;
 
@@ -35,9 +38,23 @@ public class StartListenerService extends Service implements SensorEventListener
         Sensor mStepSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         mSensorManager.registerListener(this,mStepSensor,SensorManager.SENSOR_DELAY_NORMAL);
 
+        setInitialAlarm();
+
         Intent dataListenerIntent = new Intent(this, DataLayerListenerService.class);
         startService(dataListenerIntent);
         return 0;
+    }
+
+    public void setInitialAlarm(){
+        Time time = new Time();
+        time.setToNow();
+        time.set(0,0,0,time.monthDay,time.month,time.year);
+        time.set(time.toMillis(false)+86400000);
+        Intent resetIntent = new Intent(this, ResetReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(this, 0, resetIntent,0);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC, time.toMillis(false), 86400000, pi); //86400000 is ms per day
+        Log.d("OUTPUT","Alarm set for "+time.toMillis(false)+", Current: "+System.currentTimeMillis());
     }
 
     public void onAccuracyChanged(Sensor sensor, int accuracy){}
