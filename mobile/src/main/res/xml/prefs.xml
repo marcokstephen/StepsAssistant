@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <CheckBoxPreference
+        android:title="Show Notifications"
+        android:key="showNotification"
+        android:defaultValue="true"
+        android:summary="Show steps card on Wearable">
+    </CheckBoxPreference>
+
+    <ListPreference
+        android:title="Daily Step Goal"
+        android:key="dailyStepGoal"
+        android:summary=""
+        android:entries="@array/settingsIntegers"
+        android:entryValues="@array/settingsValues"
+        android:defaultValue="9"
+        android:dialogTitle="Select Step Goal" >
+    </ListPreference>
+
+</PreferenceScreen>

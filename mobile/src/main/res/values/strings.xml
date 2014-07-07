@@ -8,5 +8,6 @@
     <string name="export">Export</string>
     <string name="clear_history_setting">Clear All History</string>
     <string name="help">Help</string>
+    <string name="title_activity_preference">Settings</string>
 
 </resources>

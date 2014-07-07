@@ -239,9 +239,8 @@ public class MyActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == R.id.clear_history){
+        if (id == R.id.clear_history) {
+            Log.d("OUTPUT","Clear history pressed");
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder.setTitle("Delete All History");
             alertDialogBuilder.setMessage("This will permanently delete all history. Are you sure?")
@@ -262,6 +261,12 @@ public class MyActivity extends Activity {
                     });
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
+        } else if (id == R.id.view_settings) {
+            Log.d("OUTPUT","Settings pressed");
+            Intent intent = new Intent(this, Prefs.class);
+            startActivity(intent);
+        } else if (id == R.id.action_help) {
+            Log.d("OUTPUT","Help pressed");
         }
         return super.onOptionsItemSelected(item);
     }
