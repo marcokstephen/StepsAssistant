@@ -35,11 +35,6 @@ public class StartListenerService extends Service implements SensorEventListener
         Sensor mStepSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         mSensorManager.registerListener(this,mStepSensor,SensorManager.SENSOR_DELAY_NORMAL);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(DATA_TO_EXPORT,"Hello world!");
-        editor.commit();
-
         Intent dataListenerIntent = new Intent(this, DataLayerListenerService.class);
         startService(dataListenerIntent);
         return 0;
@@ -83,7 +78,7 @@ public class StartListenerService extends Service implements SensorEventListener
     }
     public static String calculateTime(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        int hour=0,minute=0,second=0;
+        int hour,minute,second;
         int time = prefs.getInt(TIME_WALKED,0);
         hour = time/3600;
         time %= 3600;

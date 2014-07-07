@@ -1,5 +1,6 @@
 package com.sm.stepsassistant;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -23,11 +24,13 @@ public class DataLayerListenerService extends WearableListenerService {
     GoogleApiClient mGoogleApiClient;
     SharedPreferences prefs;
     private String data = "";
+    Context context;
 
     @Override
     public void onCreate() {
         Log.d("OUTPUT","Starting DataLayerListenerService!");
         super.onCreate();
+        context = this;
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
                 .build();
@@ -42,7 +45,7 @@ public class DataLayerListenerService extends WearableListenerService {
             Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
             toast.show();
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            prefs = PreferenceManager.getDefaultSharedPreferences(this);
             data = prefs.getString(StartListenerService.DATA_TO_EXPORT,"");
 
             new SendDataToPhone().execute();
@@ -75,6 +78,11 @@ public class DataLayerListenerService extends WearableListenerService {
                         }
                     }
             );
+            //TODO: Set up for deletion here, by implementing a storage system on the mobile side
+            /*SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(StartListenerService.DATA_TO_EXPORT,"");
+            editor.commit();*/
         }
 
         private Collection<String> getNodes() {

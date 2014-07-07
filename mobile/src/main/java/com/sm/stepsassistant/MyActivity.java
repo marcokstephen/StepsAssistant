@@ -4,34 +4,35 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.wearable.DataApi;
-import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.MessageApi;
-import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 
 public class MyActivity extends Activity {
 
     GoogleApiClient mGoogleApiClient;
-    Context c;
-    private boolean mResolvingError = false;
+    static Context c;
     private static final String START_ACTIVITY_PATH = "/start-activity";
+    public static List<Day> dayList = new ArrayList<Day>();
+    public ListView historyListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +58,35 @@ public class MyActivity extends Activity {
                 .addApi(Wearable.API)
                 .build();
         mGoogleApiClient.connect();
+
+        historyListView = (ListView)findViewById(R.id.historyListView);
+        updateListView();
     }
 
+    public void updateListView(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                HistoryListAdapter hla = new HistoryListAdapter(c,dayList);
+                historyListView.setAdapter(hla);
+            }
+        });
+    }
 
     public void onStartSyncDataClick(View view){
         Log.d("OUTPUT","Starting sync data!!");
 
         new StartWearableActivityTask().execute();
+        Toast toast = Toast.makeText(this,"Syncing...",Toast.LENGTH_SHORT);
+        toast.show();
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                updateListView();
+            }
+        };
+        handler.postDelayed(runnable,1000);
     }
 
     private class StartWearableActivityTask extends AsyncTask<Void, Void, Void> {

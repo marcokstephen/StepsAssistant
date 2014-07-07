@@ -42,8 +42,9 @@ public class ResetReceiver extends BroadcastReceiver {
             c.add(Calendar.DATE,-1); //saving data for the previous day!
 
             JSONObject jsonObject = new JSONObject();
-            String dateString = c.get(Calendar.DATE)+"/"+(c.get(Calendar.MONTH)+1)+"/"+c.get(Calendar.YEAR);
-            jsonObject.put("date",dateString); //day/month/year by default, may make possible to change later
+            jsonObject.put("day",c.get(Calendar.DATE));
+            jsonObject.put("month",c.get(Calendar.MONTH));
+            jsonObject.put("year",c.get(Calendar.YEAR));
             jsonObject.put("steps",dailyCounter);
             jsonObject.put("msTime",msWalked);
             jsonArray.put(jsonObject);
