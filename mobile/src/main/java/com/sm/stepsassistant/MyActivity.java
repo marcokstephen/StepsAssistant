@@ -1,5 +1,6 @@
 package com.sm.stepsassistant;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -117,8 +118,7 @@ public class MyActivity extends Activity {
 
     public static String dayListToString(){
         JSONArray jsonArray = new JSONArray();
-        for (int i = 0; i < dayList.size(); i++){
-            Day currentDay = dayList.get(i);
+        for (Day currentDay : dayList) {
             try {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("day", currentDay.getDay());
@@ -127,7 +127,7 @@ public class MyActivity extends Activity {
                 jsonObject.put("steps", currentDay.getStepCount());
                 jsonObject.put("msTime", currentDay.getTime());
                 jsonArray.put(jsonObject);
-            } catch (JSONException e){
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
@@ -136,9 +136,8 @@ public class MyActivity extends Activity {
 
     public void exportData(View view){
         String columnString = "Day,Month,Year,Steps,SecondsWalked";
-        for (int i = 0; i < dayList.size(); i++){
-            Day day = dayList.get(i);
-            String datastring ="\n"+day.getDay()+","+day.getMonth()+","+day.getYear()+","+day.getStepCount()+","+day.getTime();
+        for (Day day : dayList) {
+            String datastring = "\n" + day.getDay() + "," + day.getMonth() + "," + day.getYear() + "," + day.getStepCount() + "," + day.getTime();
             columnString = columnString + datastring;
         }
         File file = null;
@@ -209,8 +208,8 @@ public class MyActivity extends Activity {
                         @Override
                         public void onResult(MessageApi.SendMessageResult sendMessageResult) {
                             if (!sendMessageResult.getStatus().isSuccess()) {
-                                Log.d("OUTPUT", "Failed to send message with status code: "
-                                        + sendMessageResult.getStatus().getStatusCode());
+                                Toast toast = Toast.makeText(c,"Could not connect!",Toast.LENGTH_SHORT);
+                                toast.show();
                             } else {
                                 Log.d("OUTPUT","Successfully sent!");
                             }
@@ -246,6 +245,7 @@ public class MyActivity extends Activity {
             alertDialogBuilder.setMessage("This will permanently delete all history. Are you sure?")
                     .setCancelable(true)
                     .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                        @SuppressLint("CommitPrefEdits")
                         public void onClick(DialogInterface dialog, int id) {
                             dayList.clear();
                             updateListView();

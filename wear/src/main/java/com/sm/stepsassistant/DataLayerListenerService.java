@@ -1,5 +1,6 @@
 package com.sm.stepsassistant;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -15,6 +16,9 @@ import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -38,6 +42,7 @@ public class DataLayerListenerService extends WearableListenerService {
         mGoogleApiClient.connect();
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void onMessageReceived(MessageEvent messageEvent){
         Log.d("OUTPUT", "Message received!!");
@@ -56,12 +61,25 @@ public class DataLayerListenerService extends WearableListenerService {
         } else if (messageEvent.getPath().equals(CHANGE_PREFERENCE_PATH)){
             Log.d("OUTPUT","Receiving a preference change message");
             String message = new String(messageEvent.getData());
-            Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, "Syncing Prefs", Toast.LENGTH_SHORT);
             toast.show();
 
             prefs = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = prefs.edit();
+            boolean showStepCard = true;
+            int dailyStepGoal = 10000;
 
+            try {
+                JSONObject jsonObject = new JSONObject(message);
+                showStepCard = jsonObject.getBoolean("showNotifications");
+                dailyStepGoal = jsonObject.getInt("stepGoal");
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
+            editor.putBoolean(StartListenerService.SHOW_STEP_CARD,showStepCard);
+            editor.putInt(StartListenerService.DAILY_GOAL, dailyStepGoal);
+            editor.commit();
+            if (!showStepCard) StartListenerService.cancelNotifications();
         }
     }
 

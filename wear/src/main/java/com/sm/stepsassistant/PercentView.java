@@ -32,7 +32,6 @@ public class PercentView extends View {
     }
 
     public void init(){
-        //this.c = context;
         paint = new Paint();
         paint.setColor(getContext().getResources().getColor(R.color.play_blue_light));
         paint.setAntiAlias(true);

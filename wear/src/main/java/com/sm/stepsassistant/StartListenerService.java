@@ -25,6 +25,8 @@ public class StartListenerService extends Service implements SensorEventListener
     public static final String DAILY_GOAL = "com.sm.stepsassistant.DAILY_GOAL";
     public static final String SHOW_STEP_CARD = "com.sm.stepsassistant.SHOW_STEP_CARD";
     private long currentStep = 0;
+    private static Context c;
+    private SharedPreferences prefs;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -37,8 +39,10 @@ public class StartListenerService extends Service implements SensorEventListener
         SensorManager mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         Sensor mStepSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         mSensorManager.registerListener(this,mStepSensor,SensorManager.SENSOR_DELAY_NORMAL);
-
-        setInitialAlarm();
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        c = this;
+        boolean showAlarms = prefs.getBoolean(StartListenerService.SHOW_STEP_CARD,true);
+        if (showAlarms) setInitialAlarm();
 
         Intent dataListenerIntent = new Intent(this, DataLayerListenerService.class);
         startService(dataListenerIntent);
@@ -50,11 +54,18 @@ public class StartListenerService extends Service implements SensorEventListener
         time.setToNow();
         time.set(0,0,0,time.monthDay,time.month,time.year);
         time.set(time.toMillis(false)+86400000);
-        Intent resetIntent = new Intent(this, ResetReceiver.class);
-        PendingIntent pi = PendingIntent.getBroadcast(this, 0, resetIntent,0);
+        Intent resetIntent = new Intent(c, ResetReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(c, 1, resetIntent,0);
         AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC, time.toMillis(false), 86400000, pi); //86400000 is ms per day
         Log.d("OUTPUT","Alarm set for "+time.toMillis(false)+", Current: "+System.currentTimeMillis());
+    }
+
+    public static void cancelNotifications(){
+        Intent resetIntent = new Intent(c, ResetReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(c, 1, resetIntent,0);
+        AlarmManager alarmManager = (AlarmManager)c.getSystemService(ALARM_SERVICE);
+        alarmManager.cancel(pi);
     }
 
     public void onAccuracyChanged(Sensor sensor, int accuracy){}
@@ -63,7 +74,7 @@ public class StartListenerService extends Service implements SensorEventListener
     public void onSensorChanged(SensorEvent sensorEvent){
         int msWalked;
         long lastStep;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
 
         int stepsSinceRestart = (int) sensorEvent.values[0];

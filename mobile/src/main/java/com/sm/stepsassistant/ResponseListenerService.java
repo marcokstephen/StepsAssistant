@@ -1,5 +1,6 @@
 package com.sm.stepsassistant;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -48,6 +49,7 @@ public class ResponseListenerService extends WearableListenerService {
         stopSelf();
     }
 
+    @SuppressLint("CommitPrefEdits")
     public void updateList(String response) throws JSONException {
         MyActivity.dayList.clear();
         JSONArray jsonArray = new JSONArray(response);
@@ -58,7 +60,7 @@ public class ResponseListenerService extends WearableListenerService {
         MyActivity.sortDayList();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String historyString = prefs.getString(SAVED_HISTORY,"");
-        if (historyString != ""){
+        if (!historyString.equals("")) {
             JSONArray historyJsonArray = new JSONArray(historyString);
             for (int i = 0; i < historyJsonArray.length(); i++){
                 JSONObject jsonObject = historyJsonArray.getJSONObject(i);
