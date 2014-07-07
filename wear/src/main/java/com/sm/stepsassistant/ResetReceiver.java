@@ -69,7 +69,7 @@ public class ResetReceiver extends BroadcastReceiver {
         PendingIntent openToday = PendingIntent.getActivity(context,0,openIntent,0);
         PendingIntent openSettings = PendingIntent.getActivity(context,0,settingsIntent,0);
         NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender()
-                .setBackground(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher))
+                .setBackground(BitmapFactory.decodeResource(context.getResources(), R.drawable.notify_background))
                 .setCustomSizePreset(Notification.WearableExtender.SIZE_LARGE);
 
         int numberOfSteps = StartListenerService.calculateSteps(context);

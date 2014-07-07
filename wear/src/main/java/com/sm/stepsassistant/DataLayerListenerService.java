@@ -79,7 +79,7 @@ public class DataLayerListenerService extends WearableListenerService {
             editor.putBoolean(StartListenerService.SHOW_STEP_CARD,showStepCard);
             editor.putInt(StartListenerService.DAILY_GOAL, dailyStepGoal);
             editor.commit();
-            if (!showStepCard) StartListenerService.cancelNotifications();
+            if (!showStepCard) MyWearActivity.cancelNotifications();
         }
     }
 

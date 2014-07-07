@@ -24,6 +24,7 @@ public class StartListenerService extends Service implements SensorEventListener
     public static final String DATA_TO_EXPORT = "com.sm.stepsassistant.DATA_TO_EXPORT";
     public static final String DAILY_GOAL = "com.sm.stepsassistant.DAILY_GOAL";
     public static final String SHOW_STEP_CARD = "com.sm.stepsassistant.SHOW_STEP_CARD";
+    public static final String FIRST_TIME_LAUNCHING = "com.sm.stepsassistant.FIRST_TIME_LAUNCHING";
     private long currentStep = 0;
     private static Context c;
     private SharedPreferences prefs;
@@ -41,8 +42,8 @@ public class StartListenerService extends Service implements SensorEventListener
         mSensorManager.registerListener(this,mStepSensor,SensorManager.SENSOR_DELAY_NORMAL);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         c = this;
-        boolean showAlarms = prefs.getBoolean(StartListenerService.SHOW_STEP_CARD,true);
-        if (showAlarms) setInitialAlarm();
+
+        setInitialAlarm();
 
         Intent dataListenerIntent = new Intent(this, DataLayerListenerService.class);
         startService(dataListenerIntent);
@@ -61,13 +62,6 @@ public class StartListenerService extends Service implements SensorEventListener
         Log.d("OUTPUT","Alarm set for "+time.toMillis(false)+", Current: "+System.currentTimeMillis());
     }
 
-    public static void cancelNotifications(){
-        Intent resetIntent = new Intent(c, ResetReceiver.class);
-        PendingIntent pi = PendingIntent.getBroadcast(c, 1, resetIntent,0);
-        AlarmManager alarmManager = (AlarmManager)c.getSystemService(ALARM_SERVICE);
-        alarmManager.cancel(pi);
-    }
-
     public void onAccuracyChanged(Sensor sensor, int accuracy){}
 
     @SuppressLint("CommitPrefEdits")
@@ -78,7 +72,13 @@ public class StartListenerService extends Service implements SensorEventListener
         SharedPreferences.Editor editor = prefs.edit();
 
         int stepsSinceRestart = (int) sensorEvent.values[0];
-        if (stepsSinceRestart < prefs.getInt(COUNTER_SINCE_RESTART,0)){
+        boolean firstTimeLaunching = prefs.getBoolean(FIRST_TIME_LAUNCHING,true);
+
+        if (firstTimeLaunching && stepsSinceRestart > 0){
+            Log.d("OUTPUT","First time running!");
+            editor.putInt(DAILY_COUNTER,(0-stepsSinceRestart));
+            editor.putBoolean(FIRST_TIME_LAUNCHING,false);
+        } else if (stepsSinceRestart < prefs.getInt(COUNTER_SINCE_RESTART,0)){
             int oldSum = prefs.getInt(DAILY_COUNTER,0);
             int amountToAdd = prefs.getInt(COUNTER_SINCE_RESTART,0);
             editor.putInt(DAILY_COUNTER,oldSum+amountToAdd);

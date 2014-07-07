@@ -22,18 +22,19 @@ import com.sm.stepsassistant.fragments.MainFragment;
 import com.sm.stepsassistant.fragments.SettingFragment;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class MyWearActivity extends Activity {
 
     private ImageView firstIndicator;
     private ImageView secondIndicator;
+    private static Context c;
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        c = this;
         final int steps = StartListenerService.calculateSteps(this);
         final String time = StartListenerService.calculateTime(this);
         setPercentage(steps);
@@ -41,7 +42,9 @@ public class MyWearActivity extends Activity {
         setContentView(R.layout.activity_my_wear);
         setupViews(steps, time);
 
-        setInitialNotification();
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean showAlarms = prefs.getBoolean(StartListenerService.SHOW_STEP_CARD,true);
+        if (showAlarms) setInitialNotification();
 
         if (!isMyServiceRunning(StartListenerService.class)) {
             Intent listenerIntent = new Intent(this, StartListenerService.class);
@@ -98,6 +101,13 @@ public class MyWearActivity extends Activity {
         AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC,time.toMillis(false)+10000,420000,pi); //420000 = 7 minutes refresh
         Log.d("OUTPUT","Initial notification set!");
+    }
+
+    public static void cancelNotifications(){
+        Intent resetIntent = new Intent(c, ResetReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(c, 1, resetIntent,0);
+        AlarmManager alarmManager = (AlarmManager)c.getSystemService(ALARM_SERVICE);
+        alarmManager.cancel(pi);
     }
 
     public void setPercentage(int steps){
