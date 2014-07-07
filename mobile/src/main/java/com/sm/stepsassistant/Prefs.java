@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -38,6 +40,11 @@ public class Prefs extends PreferenceActivity implements SharedPreferences.OnSha
         addPreferencesFromResource(R.xml.prefs);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.registerOnSharedPreferenceChangeListener(this);
+        Preference showNotes = findPreference("dailyStepGoal");
+        if (showNotes instanceof ListPreference){
+            ListPreference listPref = (ListPreference) showNotes;
+            showNotes.setSummary(listPref.getEntry());
+        }
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
@@ -56,6 +63,11 @@ public class Prefs extends PreferenceActivity implements SharedPreferences.OnSha
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Preference showNotes = findPreference("dailyStepGoal");
+        if (showNotes instanceof ListPreference){
+            ListPreference listPref = (ListPreference) showNotes;
+            showNotes.setSummary(listPref.getEntry());
+        }
         boolean showNotifications = sharedPreferences.getBoolean("showNotification",true);
         int stepGoal = Integer.parseInt(sharedPreferences.getString("dailyStepGoal","10000"));
         try {

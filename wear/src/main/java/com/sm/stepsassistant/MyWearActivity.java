@@ -58,10 +58,10 @@ public class MyWearActivity extends Activity {
         secondIndicator = (ImageView) findViewById(R.id.indicator_1);
         final FPA adapter = new FPA(getFragmentManager());
         MainFragment mainFragment = new MainFragment(steps,time);
-        SettingFragment settingFragment = new SettingFragment();
+        //SettingFragment settingFragment = new SettingFragment();
         adapter.addFragment(mainFragment);
-        adapter.addFragment(settingFragment);
-        setIndicator(0);
+        //adapter.addFragment(settingFragment);
+        //setIndicator(0);
         mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener(){
             @Override
             public void onPageScrolled(int i, float v, int i2) {
@@ -69,7 +69,7 @@ public class MyWearActivity extends Activity {
 
             @Override
             public void onPageSelected(int i) {
-                setIndicator(i);
+                //setIndicator(i);
             }
 
             @Override
@@ -80,7 +80,7 @@ public class MyWearActivity extends Activity {
         mPager.setAdapter(adapter);
     }
 
-    private void setIndicator(int i) {
+    /*private void setIndicator(int i) {
         switch (i) {
             case 0:
                 firstIndicator.setImageResource(R.drawable.full_10);
@@ -91,7 +91,7 @@ public class MyWearActivity extends Activity {
                 secondIndicator.setImageResource(R.drawable.full_10);
                 break;
         }
-    }
+    }*/
 
     public void setInitialNotification(){
         Time time = new Time();

@@ -20,9 +20,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         int notificationId = 1;
         Intent openIntent = new Intent(context, MyWearActivity.class);
-        Intent settingsIntent = new Intent();
         PendingIntent openToday = PendingIntent.getActivity(context,0,openIntent,0);
-        PendingIntent openSettings = PendingIntent.getActivity(context,0,settingsIntent,0);
         NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender()
                 .setBackground(BitmapFactory.decodeResource(context.getResources(), R.drawable.notify_background))
                 .setCustomSizePreset(Notification.WearableExtender.SIZE_LARGE);
@@ -34,7 +32,6 @@ public class NotificationReceiver extends BroadcastReceiver {
                 .setContentTitle(NumberFormat.getInstance().format(numberOfSteps)+" steps")
                 .setContentText(StartListenerService.calculateTime(context))
                 .addAction(R.drawable.ic_action_full_screen, "Open", openToday)
-                .addAction(R.drawable.ic_action_settings, "Settings", openSettings)
                 .extend(wearableExtender);
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);

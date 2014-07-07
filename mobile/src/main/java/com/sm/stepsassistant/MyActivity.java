@@ -208,8 +208,7 @@ public class MyActivity extends Activity {
                         @Override
                         public void onResult(MessageApi.SendMessageResult sendMessageResult) {
                             if (!sendMessageResult.getStatus().isSuccess()) {
-                                Toast toast = Toast.makeText(c,"Could not connect!",Toast.LENGTH_SHORT);
-                                toast.show();
+                                Log.d("OUTPUT","Connection failed (sync)!");
                             } else {
                                 Log.d("OUTPUT","Successfully sent!");
                             }

@@ -91,7 +91,7 @@ public class StartListenerService extends Service implements SensorEventListener
         currentStep = sensorEvent.timestamp/1000000000;
         if (currentStep - lastStep < 5){
             msWalked += (int)(currentStep - lastStep);
-        } else {
+        } else if (lastStep != currentStep) {
             msWalked += 5; //rough estimation to make up for missed time
         }
 
