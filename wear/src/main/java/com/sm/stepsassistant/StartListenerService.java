@@ -34,6 +34,14 @@ public class StartListenerService extends Service implements SensorEventListener
         SensorManager mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         Sensor mStepSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         mSensorManager.registerListener(this,mStepSensor,SensorManager.SENSOR_DELAY_NORMAL);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(DATA_TO_EXPORT,"Hello world!");
+        editor.commit();
+
+        Intent dataListenerIntent = new Intent(this, DataLayerListenerService.class);
+        startService(dataListenerIntent);
         return 0;
     }
 

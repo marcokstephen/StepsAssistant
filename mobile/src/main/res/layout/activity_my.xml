@@ -15,14 +15,15 @@
         android:layout_alignParentBottom="true">
 
         <Button style="?android:buttonBarButtonStyle"
-            android:id="@+id/cancelButton"
+            android:id="@+id/syncButton"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="@string/sync" />
+            android:text="@string/sync"
+            android:onClick="onStartSyncDataClick" />
 
         <Button
-            android:id="@+id/createButton"
+            android:id="@+id/exportButton"
             style="?android:buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
