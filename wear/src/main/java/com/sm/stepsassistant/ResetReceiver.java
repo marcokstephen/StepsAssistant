@@ -1,17 +1,23 @@
 package com.sm.stepsassistant;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.NumberFormat;
 import java.util.Calendar;
 
 public class ResetReceiver extends BroadcastReceiver {
@@ -45,7 +51,7 @@ public class ResetReceiver extends BroadcastReceiver {
             jsonObject.put("day",c.get(Calendar.DATE));
             jsonObject.put("month",c.get(Calendar.MONTH));
             jsonObject.put("year",c.get(Calendar.YEAR));
-            jsonObject.put("steps",counter);
+            jsonObject.put("steps", counter);
             jsonObject.put("msTime",msWalked);
             jsonArray.put(jsonObject);
             valuesToExport = jsonArray.toString();
@@ -56,7 +62,28 @@ public class ResetReceiver extends BroadcastReceiver {
         editor.putString(StartListenerService.DATA_TO_EXPORT,valuesToExport);
         editor.commit();
 
-        Intent resetNotification = new Intent(context, NotificationReceiver.class);
-        context.startActivity(resetNotification);
+
+        int notificationId = 1;
+        Intent openIntent = new Intent(context, MyWearActivity.class);
+        Intent settingsIntent = new Intent();
+        PendingIntent openToday = PendingIntent.getActivity(context,0,openIntent,0);
+        PendingIntent openSettings = PendingIntent.getActivity(context,0,settingsIntent,0);
+        NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender()
+                .setBackground(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher))
+                .setCustomSizePreset(Notification.WearableExtender.SIZE_LARGE);
+
+        int numberOfSteps = StartListenerService.calculateSteps(context);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder (context)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle(NumberFormat.getInstance().format(numberOfSteps)+" steps")
+                .setContentText(StartListenerService.calculateTime(context))
+                .addAction(R.drawable.ic_action_full_screen, "Open", openToday)
+                .addAction(R.drawable.ic_action_settings, "Settings", openSettings)
+                .extend(wearableExtender);
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+        notificationManagerCompat.notify(notificationId,notificationBuilder.build());
+        Log.d("OUTPUT", "Notification Updated!");
     }
 }

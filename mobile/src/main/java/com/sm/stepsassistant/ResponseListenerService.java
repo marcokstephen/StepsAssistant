@@ -1,5 +1,7 @@
 package com.sm.stepsassistant;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ResponseListenerService extends WearableListenerService {
+    public static final String SAVED_HISTORY = "com.sm.stepsassistant.SAVED_HISTORY";
     private static final String START_ACTIVITY_PATH = "/start-activity";
     GoogleApiClient mGoogleApiClient;
 
@@ -46,11 +49,24 @@ public class ResponseListenerService extends WearableListenerService {
     }
 
     public void updateList(String response) throws JSONException {
+        MyActivity.dayList.clear();
         JSONArray jsonArray = new JSONArray(response);
         for (int i = 0; i < jsonArray.length(); i++){
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             MyActivity.dayList.add(new Day(jsonObject));
         }
-        //TODO: find a way to update the list !
+        MyActivity.sortDayList();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String historyString = prefs.getString(SAVED_HISTORY,"");
+        if (historyString != ""){
+            JSONArray historyJsonArray = new JSONArray(historyString);
+            for (int i = 0; i < historyJsonArray.length(); i++){
+                JSONObject jsonObject = historyJsonArray.getJSONObject(i);
+                MyActivity.dayList.add(new Day(jsonObject));
+            }
+        }
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(SAVED_HISTORY,MyActivity.dayListToString());
+        editor.commit();
     }
 }

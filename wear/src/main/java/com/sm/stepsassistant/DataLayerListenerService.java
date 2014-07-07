@@ -47,6 +47,9 @@ public class DataLayerListenerService extends WearableListenerService {
 
             prefs = PreferenceManager.getDefaultSharedPreferences(this);
             data = prefs.getString(StartListenerService.DATA_TO_EXPORT,"");
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(StartListenerService.DATA_TO_EXPORT,"");
+            editor.commit();
 
             new SendDataToPhone().execute();
         }
@@ -78,11 +81,6 @@ public class DataLayerListenerService extends WearableListenerService {
                         }
                     }
             );
-            //TODO: Set up for deletion here, by implementing a storage system on the mobile side
-            /*SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString(StartListenerService.DATA_TO_EXPORT,"");
-            editor.commit();*/
         }
 
         private Collection<String> getNodes() {

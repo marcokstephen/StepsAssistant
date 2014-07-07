@@ -1,10 +1,15 @@
 package com.sm.stepsassistant;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,11 +25,16 @@ import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-
 
 public class MyActivity extends Activity {
 
@@ -33,6 +43,7 @@ public class MyActivity extends Activity {
     private static final String START_ACTIVITY_PATH = "/start-activity";
     public static List<Day> dayList = new ArrayList<Day>();
     public ListView historyListView;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,23 +54,34 @@ public class MyActivity extends Activity {
         mGoogleApiClient = new GoogleApiClient.Builder(c)
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
-                    public void onConnected(Bundle bundle) {
-                    }
-
+                    public void onConnected(Bundle bundle) {}
                     @Override
-                    public void onConnectionSuspended(int i) {
-                    }
+                    public void onConnectionSuspended(int i) {}
                 })
                 .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
-                    public void onConnectionFailed(ConnectionResult connectionResult) {
-                    }
+                    public void onConnectionFailed(ConnectionResult connectionResult) {}
                 })
                 .addApi(Wearable.API)
                 .build();
         mGoogleApiClient.connect();
 
         historyListView = (ListView)findViewById(R.id.historyListView);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String historyString = prefs.getString(ResponseListenerService.SAVED_HISTORY,"");
+        if (!historyString.equals("")){
+            try {
+                JSONArray historyJsonArray = new JSONArray(historyString);
+                for (int i = 0; i < historyJsonArray.length(); i++) {
+                    JSONObject jsonObject = historyJsonArray.getJSONObject(i);
+                    MyActivity.dayList.add(new Day(jsonObject));
+                }
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+
         updateListView();
     }
 
@@ -71,6 +93,38 @@ public class MyActivity extends Activity {
                 historyListView.setAdapter(hla);
             }
         });
+    }
+
+    public static void sortDayList(){
+        Collections.sort(dayList, new Comparator<Day>(){
+            public int compare(Day day1, Day day2){
+                Time time1 = new Time();
+                time1.set(day1.getDay(),day1.getMonth(),day1.getYear());
+                Time time2 = new Time();
+                time2.set(day2.getDay(),day2.getMonth(),day2.getYear());
+                if (time1.toMillis(false) > time2.toMillis(false)) return -1;
+                return 1;
+            }
+        });
+    }
+
+    public static String dayListToString(){
+        JSONArray jsonArray = new JSONArray();
+        for (int i = 0; i < dayList.size(); i++){
+            Day currentDay = dayList.get(i);
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("day", currentDay.getDay());
+                jsonObject.put("month", currentDay.getMonth());
+                jsonObject.put("year", currentDay.getYear());
+                jsonObject.put("steps", currentDay.getStepCount());
+                jsonObject.put("msTime", currentDay.getTime());
+                jsonArray.put(jsonObject);
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+        return jsonArray.toString();
     }
 
     public void onStartSyncDataClick(View view){
@@ -121,30 +175,45 @@ public class MyActivity extends Activity {
             HashSet<String> results = new HashSet<String>();
             NodeApi.GetConnectedNodesResult nodes =
                     Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).await();
-
             for (Node node : nodes.getNodes()) {
                 results.add(node.getId());
             }
-
             return results;
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.my, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.clear_history){
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("Delete All History");
+            alertDialogBuilder.setMessage("This will permanently delete all history. Are you sure?")
+                    .setCancelable(true)
+                    .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dayList.clear();
+                            updateListView();
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putString(ResponseListenerService.SAVED_HISTORY, "");
+                            editor.commit();
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
         }
         return super.onOptionsItemSelected(item);
     }
