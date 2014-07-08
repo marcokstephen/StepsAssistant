@@ -32,7 +32,7 @@ public class ResetReceiver extends BroadcastReceiver {
         SharedPreferences.Editor editor = prefs.edit();
         int counterSinceRestart = prefs.getInt(StartListenerService.COUNTER_SINCE_RESTART, 0);
         int counter = StartListenerService.calculateSteps(context);
-        int msWalked = prefs.getInt(StartListenerService.TIME_WALKED, 0);
+        int msWalked = prefs.getInt(StartListenerService.TIME_WALKED, 0)/1000;
 
         editor.putInt(StartListenerService.DAILY_COUNTER,(0-counterSinceRestart));
         editor.putInt(StartListenerService.TIME_WALKED,0);

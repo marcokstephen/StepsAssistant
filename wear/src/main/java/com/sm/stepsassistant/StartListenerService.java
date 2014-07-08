@@ -86,13 +86,17 @@ public class StartListenerService extends Service implements SensorEventListener
         editor.putInt(COUNTER_SINCE_RESTART,stepsSinceRestart);
 
         //Counting the amount of time that the person is walking for
+        //msWalked is actually measured in seconds.....
         msWalked = prefs.getInt(TIME_WALKED, 0);
         lastStep = currentStep;
-        currentStep = sensorEvent.timestamp/1000000000;
-        if (currentStep - lastStep < 5){
+        currentStep = sensorEvent.timestamp/1000000;
+        Log.d("OUTPUT","Difference: "+(currentStep - lastStep));
+        if (currentStep - lastStep < 90000){ //if difference is less than 2 minutes (required since the sensor does not immediately update)
+            Log.d("OUTPUT","Adding!");
             msWalked += (int)(currentStep - lastStep);
         } else if (lastStep != currentStep) {
-            msWalked += 5; //rough estimation to make up for missed time
+            Log.d("OUTPUT","ADDING 5!");
+            msWalked += 5000; //rough estimation to make up for missed time
         }
 
         editor.putInt(TIME_WALKED, msWalked);
@@ -107,7 +111,7 @@ public class StartListenerService extends Service implements SensorEventListener
     public static String calculateTime(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         int hour,minute,second;
-        int time = prefs.getInt(TIME_WALKED,0);
+        int time = prefs.getInt(TIME_WALKED,0)/1000;
         hour = time/3600;
         time %= 3600;
         minute = time/60;

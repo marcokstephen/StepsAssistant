@@ -17,8 +17,10 @@ import android.text.format.Time;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -89,7 +91,12 @@ public class MyActivity extends Activity {
                 e.printStackTrace();
             }
         }
-
+        TextView messageTextView = (TextView)findViewById(R.id.messageTextView);
+        if (!(dayList.size() == 0)){
+            messageTextView.setVisibility(View.GONE);
+        } else {
+            messageTextView.setVisibility(View.VISIBLE);
+        }
         updateListView();
     }
 
@@ -266,6 +273,8 @@ public class MyActivity extends Activity {
             startActivity(intent);
         } else if (id == R.id.action_help) {
             Log.d("OUTPUT","Help pressed");
+            Intent intent = new Intent(this, HelpActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }

@@ -40,6 +40,14 @@ s
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sm.stepsassistant.MyActivity" />
         </activity>
+        <activity
+            android:name=".HelpActivity"
+            android:label="@string/title_activity_help"
+            android:parentActivityName=".MyActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sm.stepsassistant.MyActivity" />
+        </activity>
     </application>
 
 </manifest>

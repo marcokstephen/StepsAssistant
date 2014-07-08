@@ -9,5 +9,8 @@
     <string name="clear_history_setting">Clear All History</string>
     <string name="help">Help</string>
     <string name="title_activity_preference">Settings</string>
+    <string name="inform_message">You don\'t have any logs added yet!\n\n You will be able to synchronize after the step counter has been running for a day.</string>
+    <string name="title_activity_help">Help</string>
+    <string name="help_string">Loading...</string>
 
 </resources>

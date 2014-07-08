@@ -26,8 +26,8 @@ import java.util.List;
 
 public class MyWearActivity extends Activity {
 
-    private ImageView firstIndicator;
-    private ImageView secondIndicator;
+    //private ImageView firstIndicator;
+    //private ImageView secondIndicator;
     private static Context c;
     SharedPreferences prefs;
 
@@ -54,8 +54,8 @@ public class MyWearActivity extends Activity {
 
     private void setupViews(int steps, String time){
         ViewPager mPager = (ViewPager) findViewById(R.id.pager);
-        firstIndicator = (ImageView) findViewById(R.id.indicator_0);
-        secondIndicator = (ImageView) findViewById(R.id.indicator_1);
+        //firstIndicator = (ImageView) findViewById(R.id.indicator_0);
+        //secondIndicator = (ImageView) findViewById(R.id.indicator_1);
         final FPA adapter = new FPA(getFragmentManager());
         MainFragment mainFragment = new MainFragment(steps,time);
         //SettingFragment settingFragment = new SettingFragment();
