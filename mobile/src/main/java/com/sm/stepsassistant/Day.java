@@ -41,4 +41,20 @@ public class Day {
     public int getTime() {
         return this.time;
     }
+
+    @Override
+    public String toString(){
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("day",day);
+            jsonObject.put("month",month);
+            jsonObject.put("year",year);
+            jsonObject.put("steps", stepCount);
+            jsonObject.put("msTime",time);
+            return jsonObject.toString();
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+        return super.toString();
+    }
 }
