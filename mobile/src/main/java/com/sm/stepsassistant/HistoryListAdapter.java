@@ -8,10 +8,14 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class HistoryListAdapter extends BaseAdapter {
 
+    SimpleDateFormat fromDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    SimpleDateFormat toDateFormat = new SimpleDateFormat("MMM dd, yyyy");
     private LayoutInflater myInflater;
     private List<Day> dayList;
 
@@ -56,6 +60,11 @@ public class HistoryListAdapter extends BaseAdapter {
         TextView timeTextView = (TextView) view.findViewById(R.id.timeTextView);
 
         String dayString = day+"/"+month+"/"+year;
+        try {
+            dayString = toDateFormat.format(fromDateFormat.parseObject(dayString));
+        } catch (ParseException e){
+            e.printStackTrace();
+        }
         dateTextView.setText(dayString);
         stepTextView.setText(NumberFormat.getInstance().format(dayList.get(i).getStepCount())+" steps");
         timeTextView.setText(String.format("%02d",hour)+":"+String.format("%02d",minute)+":"+String.format("%02d",second));
