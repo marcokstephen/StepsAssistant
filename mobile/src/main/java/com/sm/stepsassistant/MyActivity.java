@@ -54,13 +54,14 @@ public class MyActivity extends Activity {
     public static List<Day> dayList = new ArrayList<Day>();
     public ListView historyListView;
     private SharedPreferences prefs;
+    private TextView messageTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
         c = this;
-
+        dayList.clear();
         mGoogleApiClient = new GoogleApiClient.Builder(c)
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
@@ -91,7 +92,7 @@ public class MyActivity extends Activity {
                 e.printStackTrace();
             }
         }
-        TextView messageTextView = (TextView)findViewById(R.id.messageTextView);
+        messageTextView = (TextView)findViewById(R.id.messageTextView);
         if (!(dayList.size() == 0)){
             messageTextView.setVisibility(View.GONE);
         } else {
@@ -106,6 +107,11 @@ public class MyActivity extends Activity {
             public void run() {
                 HistoryListAdapter hla = new HistoryListAdapter(c,dayList);
                 historyListView.setAdapter(hla);
+                if (!(dayList.size() == 0)){
+                    messageTextView.setVisibility(View.GONE);
+                } else {
+                    messageTextView.setVisibility(View.VISIBLE);
+                }
             }
         });
     }
