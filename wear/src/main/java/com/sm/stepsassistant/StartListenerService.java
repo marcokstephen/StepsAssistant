@@ -43,23 +43,9 @@ public class StartListenerService extends Service implements SensorEventListener
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         c = this;
 
-        setInitialAlarm();
-
         Intent dataListenerIntent = new Intent(this, DataLayerListenerService.class);
         startService(dataListenerIntent);
         return 0;
-    }
-
-    public void setInitialAlarm(){
-        Time time = new Time();
-        time.setToNow();
-        time.set(0,0,0,time.monthDay,time.month,time.year);
-        time.set(time.toMillis(false)+86400000);
-        Intent resetIntent = new Intent(c, ResetReceiver.class);
-        PendingIntent pi = PendingIntent.getBroadcast(c, 1, resetIntent,0);
-        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC, time.toMillis(false), 86400000, pi); //86400000 is ms per day
-        Log.d("OUTPUT","Alarm set for "+time.toMillis(false)+", Current: "+System.currentTimeMillis());
     }
 
     public void onAccuracyChanged(Sensor sensor, int accuracy){}

@@ -46,10 +46,24 @@ public class MyWearActivity extends Activity {
         boolean showAlarms = prefs.getBoolean(StartListenerService.SHOW_STEP_CARD,true);
         if (showAlarms) setInitialNotification();
 
+        setInitialAlarm();
+
         if (!isMyServiceRunning(StartListenerService.class)) {
             Intent listenerIntent = new Intent(this, StartListenerService.class);
             startService(listenerIntent);
         }
+    }
+
+    public void setInitialAlarm(){
+        Time time = new Time();
+        time.setToNow();
+        time.set(0,0,0,time.monthDay,time.month,time.year);
+        time.set(time.toMillis(false)+86400000);
+        Intent resetIntent = new Intent(c, ResetReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(c, 1, resetIntent,0);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC, time.toMillis(false), 86400000, pi); //86400000 is ms per day
+        Log.d("OUTPUT","Alarm set for "+time.toMillis(false)+", Current: "+System.currentTimeMillis());
     }
 
     private void setupViews(int steps, String time){
@@ -80,19 +94,6 @@ public class MyWearActivity extends Activity {
         mPager.setAdapter(adapter);
     }
 
-    /*private void setIndicator(int i) {
-        switch (i) {
-            case 0:
-                firstIndicator.setImageResource(R.drawable.full_10);
-                secondIndicator.setImageResource(R.drawable.empty_10);
-                break;
-            case 1:
-                firstIndicator.setImageResource(R.drawable.empty_10);
-                secondIndicator.setImageResource(R.drawable.full_10);
-                break;
-        }
-    }*/
-
     public void setInitialNotification(){
         Time time = new Time();
         time.setToNow();
@@ -101,13 +102,6 @@ public class MyWearActivity extends Activity {
         AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC,time.toMillis(false)+10000,420000,pi); //420000 = 7 minutes refresh
         Log.d("OUTPUT","Initial notification set!");
-    }
-
-    public static void cancelNotifications(){
-        Intent resetIntent = new Intent(c, ResetReceiver.class);
-        PendingIntent pi = PendingIntent.getBroadcast(c, 1, resetIntent,0);
-        AlarmManager alarmManager = (AlarmManager)c.getSystemService(ALARM_SERVICE);
-        alarmManager.cancel(pi);
     }
 
     public void setPercentage(int steps){
