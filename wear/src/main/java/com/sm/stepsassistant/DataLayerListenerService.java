@@ -61,8 +61,6 @@ public class DataLayerListenerService extends WearableListenerService {
         } else if (messageEvent.getPath().equals(CHANGE_PREFERENCE_PATH)){
             Log.d("OUTPUT","Receiving a preference change message");
             String message = new String(messageEvent.getData());
-            Toast toast = Toast.makeText(this, "Syncing Prefs", Toast.LENGTH_SHORT);
-            toast.show();
 
             prefs = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = prefs.edit();
