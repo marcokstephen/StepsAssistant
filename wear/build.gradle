@@ -9,8 +9,8 @@ android {
         applicationId "com.sm.stepsassistant"
         minSdkVersion 20
         targetSdkVersion 20
-        versionCode 1
-        versionName "1.0"
+        versionCode 6
+        versionName "1.6"
     }
     buildTypes {
         release {
